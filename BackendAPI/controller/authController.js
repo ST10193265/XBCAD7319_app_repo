@@ -43,6 +43,7 @@ const register = async (req, res) => {
       res.status(500).json({ message: 'Server error' });
     }
   };
+
   const login = async (req, res) => {
     const { username, password } = req.body;
   
@@ -71,16 +72,31 @@ const register = async (req, res) => {
       });
   
       console.log("Login successful for user:", username);
-      res.json({
-        token,
-        userId: user._id,
-        role: user.role,
-      });
+  
+      // Differentiate response based on user role
+      if (user.role === 'staff') {
+        return res.json({
+          token,
+          userId: user._id,
+          role: user.role,
+          message: 'Welcome to the staff portal!',
+        });
+      } else if (user.role === 'patient') {
+        return res.json({
+          token,
+          userId: user._id,
+          role: user.role,
+          message: 'Welcome to the patient portal!',
+        });
+      } else {
+        return res.status(400).json({ message: 'Unknown user role' });
+      }
     } catch (error) {
       console.error("Error during login:", error);
       res.status(500).json({ message: 'Server error' });
     }
   };
+  
   
   const forgetPassword = async (req, res) => {
     const { username, newPassword } = req.body;
